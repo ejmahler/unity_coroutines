@@ -1,6 +1,36 @@
 # unity_coroutines
 An attempt to create something like the Unity game engine's coroutine system, via Rust's new generator syntax.
 
+Create an instance of `CoroutineManager`, then pass a generator to its `start_coroutine` method. Once per "frame", call the `update` method to update the state of all existing coroutines.
+
+Example:
+```rust
+fn main() {
+    let manager = CoroutineManager::new();
+
+    let coroutine1_handle = manager.start_coroutine(move || {
+        for i in 0..20 {
+            println!("coroutine1: {}", i);
+            yield CoroutineCondition::WaitOneFrame;
+        }
+    });
+
+    manager.start_coroutine(move || {
+        println!("coroutine2: Waiting for coroutine1 to finish");
+        yield CoroutineCondition::WaitForCoroutine(coroutine1_handle);
+        println!("coroutine2: coroutine1 has finished");
+    });
+
+    
+    while manager.has_coroutines() {
+        manager.update();
+    }
+}
+```
+
+There's a long way to go before these are useful -- something on the order of an entire game engine being designed around them.
+
+# Motivation
 Unity's coroutine system is useful because it allows you to express complex stateful logic in a single function. The resumable nature of coroutines allows the programmer to suspend the coroutine until some important game event happens, such as player input or the passage of time.
 
 The most obvious alternative is to mantually write a state machine. This is less than ideal for a number of reasons. Just imagine trying to write a state machine with equivalent functionality to the following unity coroutine, which runs a simple tutorial:
