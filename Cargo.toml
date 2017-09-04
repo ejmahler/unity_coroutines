@@ -1,0 +1,5 @@
+[package]
+name = "unity_coroutines"
+version = "0.1.0"
+
+[dependencies]
