@@ -79,7 +79,7 @@ impl CurrentCoroutines {
 	}
 }
 
-/// CorputineManager manages the state and execution of several coroutines. Queue a new coroutine by calling start_coroutine(), and update all coroutines by calling update() once per frame
+/// CoroutineManager manages the state and execution of several coroutines. Queue a new coroutine by calling start_coroutine(), and update all coroutines by calling update() once per frame
 pub struct CoroutineManager {
 	queue: RefCell<CoroutineQueue>,
 	coroutines: RefCell<CurrentCoroutines>,
@@ -103,8 +103,8 @@ impl CoroutineManager {
 		let mut coroutine_ref = self.coroutines.borrow_mut();
 
 		{
-			//drain the queue of new coroutines into the list of active corutines
-			//it's important to do this inside of an isolated scape, because coroutines may want to start new coroutines from within themselves
+			//drain the queue of new coroutines into the hashmap of active coroutines
+			//it's important to do this inside of an isolated scope, because coroutines may want to start new coroutines from within themselves
 			//so the borrow on the queue must be released before we start updating the coroutines
 			let mut queue_ref = self.queue.borrow_mut();
 			for (k, generator) in queue_ref.queued_coroutines.drain() {
